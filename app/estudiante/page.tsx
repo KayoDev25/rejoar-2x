@@ -17,17 +17,17 @@ const scholarships = [
   {
     name: 'Beca Impulso Universitario',
     entity: 'Fundación Horizonte',
-    deadline: '30 de abril de 2026',
+    deadline: '30 de noviembre de 2026',
   },
   {
     name: 'Beca Primer Paso',
     entity: 'Red de Educación Abierta',
-    deadline: '15 de mayo de 2026',
+    deadline: '15 de diciembre de 2026',
   },
   {
     name: 'Beca Talento Digital',
     entity: 'Comunidad Código Sur',
-    deadline: '2 de junio de 2026',
+    deadline: '20 de enero de 2027',
   },
 ]
 
