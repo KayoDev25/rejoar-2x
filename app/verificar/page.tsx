@@ -1,19 +1,49 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BadgeCheck, CheckCircle2, ExternalLink, ShieldCheck, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { formatDateOnly, formatTimestamp, getCredentialByCode, hashscanUrl, type CredentialWithStudent } from '@/lib/data'
 
 const DEMO_CODE = 'REJOAR-2026-001'
 
+type Status = 'idle' | 'loading' | 'valid' | 'invalid' | 'error'
+
 export default function VerificarPage() {
   const [code, setCode] = useState('')
-  const [status, setStatus] = useState<'idle' | 'valid' | 'invalid'>('idle')
+  const [status, setStatus] = useState<Status>('idle')
+  const [result, setResult] = useState<CredentialWithStudent | null>(null)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  function handleVerify() {
-    const normalizedCode = code.trim().toUpperCase()
-    setStatus(normalizedCode === DEMO_CODE ? 'valid' : 'invalid')
+  async function verify(rawCode: string) {
+    const normalizedCode = rawCode.trim().toUpperCase()
+    if (!normalizedCode) {
+      setStatus('invalid')
+      setResult(null)
+      return
+    }
+
+    setStatus('loading')
+    try {
+      const credential = await getCredentialByCode(normalizedCode)
+      setResult(credential)
+      setStatus(credential ? 'valid' : 'invalid')
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Ocurrió un error inesperado.')
+      setStatus('error')
+    }
   }
+
+  // Si la dirección trae ?code=..., se completa y se verifica solo (enlace para compartir).
+  useEffect(() => {
+    const codeFromUrl = new URLSearchParams(window.location.search).get('code')
+    if (codeFromUrl) {
+      setCode(codeFromUrl)
+      verify(codeFromUrl)
+    }
+  }, [])
+
+  const isLoading = status === 'loading'
 
   return (
     <main className="min-h-screen bg-[#f4fbf9] text-slate-950">
@@ -45,16 +75,16 @@ export default function VerificarPage() {
               type="text"
               value={code}
               onChange={(event) => { setCode(event.target.value); setStatus('idle') }}
-              onKeyDown={(event) => { if (event.key === 'Enter') handleVerify() }}
+              onKeyDown={(event) => { if (event.key === 'Enter') verify(code) }}
               placeholder="Ej: REJOAR-2026-001"
               className="h-12 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-4 text-sm text-[#123047] outline-none transition placeholder:text-slate-400 focus:border-[#58b992] focus:ring-4 focus:ring-[#dff6ec]"
             />
-            <Button type="button" onClick={handleVerify} className="h-12 rounded-xl bg-[#164e63] px-6 text-base font-semibold text-white hover:bg-[#0f3d50]">Verificar</Button>
+            <Button type="button" onClick={() => verify(code)} disabled={isLoading} className="h-12 rounded-xl bg-[#164e63] px-6 text-base font-semibold text-white hover:bg-[#0f3d50]">{isLoading ? 'Verificando...' : 'Verificar'}</Button>
           </div>
           <p className="mt-3 text-xs text-slate-500">Probá con el código de ejemplo: <button type="button" onClick={() => { setCode(DEMO_CODE); setStatus('idle') }} className="font-semibold text-[#147d61] underline underline-offset-2">REJOAR-2026-001</button></p>
         </div>
 
-        {status === 'valid' && (
+        {status === 'valid' && result && (
           <div role="status" className="mt-6 rounded-[2rem] border border-[#a9e1c9] bg-[#eaf9f1] p-6 sm:p-8">
             <div className="flex items-start gap-4">
               <CheckCircle2 aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-[#16805f]" />
@@ -64,11 +94,18 @@ export default function VerificarPage() {
                   <span className="rounded-full bg-[#c8f0da] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#147d61]">Dato simulado</span>
                 </div>
                 <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-3">
-                  <div><dt className="text-slate-500">Estudiante</dt><dd className="mt-1 font-semibold text-[#123047]">Julieta Martínez</dd></div>
-                  <div><dt className="text-slate-500">Institución emisora</dt><dd className="mt-1 font-semibold text-[#123047]">Instituto Superior del Sur</dd></div>
-                  <div><dt className="text-slate-500">Fecha de emisión</dt><dd className="mt-1 font-semibold text-[#123047]">12 de marzo de 2026</dd></div>
+                  <div><dt className="text-slate-500">Estudiante</dt><dd className="mt-1 font-semibold text-[#123047]">{result.student.name}</dd></div>
+                  <div><dt className="text-slate-500">Institución emisora</dt><dd className="mt-1 font-semibold text-[#123047]">{result.issuer}</dd></div>
+                  <div><dt className="text-slate-500">Fecha de emisión</dt><dd className="mt-1 font-semibold text-[#123047]">{formatDateOnly(result.issued_at)}</dd></div>
                 </dl>
-                <a href="#" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#147d61] underline underline-offset-4 hover:text-[#0f604b]">Ver registro en la blockchain <ExternalLink aria-hidden="true" className="size-4" /></a>
+                <p className="mt-5 text-sm text-slate-600">
+                  {result.verified_at ? `Verificada por una organización el ${formatTimestamp(result.verified_at)}.` : 'Todavía ninguna organización la verificó.'}
+                </p>
+                {result.hedera_tx ? (
+                  <a href={hashscanUrl(result.hedera_tx)} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#147d61] underline underline-offset-4 hover:text-[#0f604b]">Ver registro en la blockchain <ExternalLink aria-hidden="true" className="size-4" /></a>
+                ) : (
+                  <p className="mt-5 text-sm text-slate-500">Registro en la blockchain: pendiente.</p>
+                )}
               </div>
             </div>
           </div>
@@ -78,6 +115,13 @@ export default function VerificarPage() {
           <div role="alert" className="mt-6 flex items-start gap-4 rounded-[2rem] border border-red-200 bg-red-50 p-6 text-red-800 sm:p-8">
             <XCircle aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-red-600" />
             <div><h2 className="font-semibold">Código inválido</h2><p className="mt-1 text-sm leading-6 text-red-700">No encontramos una credencial con ese código. Revisalo e intentá nuevamente.</p></div>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div role="alert" className="mt-6 flex items-start gap-4 rounded-[2rem] border border-amber-200 bg-amber-50 p-6 text-amber-900 sm:p-8">
+            <XCircle aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-amber-600" />
+            <div><h2 className="font-semibold">No pudimos consultar la base</h2><p className="mt-1 text-sm leading-6">{errorMessage}</p></div>
           </div>
         )}
       </section>
