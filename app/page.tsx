@@ -1,4 +1,4 @@
-import { ArrowUpRight, Check, FileText, Layers3, MailWarning, ShieldCheck } from 'lucide-react'
+import { ArrowUpRight, BadgeCheck, BriefcaseBusiness, Check, Eye, FileText, Layers3, MailWarning, Share2, ShieldCheck, WalletCards } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const problems = [
@@ -17,6 +17,19 @@ const problems = [
     title: 'Papeles repetidos',
     description: 'La misma documentación se sube una y otra vez.',
   },
+]
+
+const steps = [
+  { icon: BadgeCheck, title: 'La institución emite tu credencial verificable.' },
+  { icon: Share2, title: 'La compartís con un click al postular.' },
+  { icon: Eye, title: 'La empresa u ONG verifica que es auténtica.' },
+  { icon: WalletCards, title: 'La beca se financia y el pago llega a tu billetera.' },
+]
+
+const organizationBenefits = [
+  { icon: WalletCards, title: 'Financiar becas con trazabilidad', description: 'Acompañá cada aporte desde el origen hasta la persona becada.' },
+  { icon: BadgeCheck, title: 'Verificar credenciales al instante', description: 'Tomá decisiones con información auténtica y actualizada.' },
+  { icon: BriefcaseBusiness, title: 'Conocer talento', description: 'Descubrí estudiantes con potencial para tu organización.' },
 ]
 
 export default function Page() {
@@ -51,11 +64,11 @@ export default function Page() {
               Encontrá oportunidades, postulá sin repetir papeles y construí una identidad académica verificable. Todo en un solo lugar.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="h-12 rounded-full bg-[#164e63] px-6 text-base font-semibold text-white hover:bg-[#0f3d50]">
-                <a href="#estudiantes">Soy estudiante <ArrowUpRight data-icon="inline-end" /></a>
+              <Button render={<a href="#estudiantes" />} size="lg" className="h-12 rounded-full bg-[#164e63] px-6 text-base font-semibold text-white hover:bg-[#0f3d50]">
+                Soy estudiante <ArrowUpRight data-icon="inline-end" />
               </Button>
-              <Button asChild size="lg" variant="outline" className="h-12 rounded-full border-[#9bd8c1] bg-white/70 px-6 text-base font-semibold text-[#147d61] hover:bg-[#eaf8f2]">
-                <a href="#organizaciones">Soy empresa u ONG <ArrowUpRight data-icon="inline-end" /></a>
+              <Button render={<a href="#organizaciones" />} size="lg" variant="outline" className="h-12 rounded-full border-[#9bd8c1] bg-white/70 px-6 text-base font-semibold text-[#147d61] hover:bg-[#eaf8f2]">
+                Soy empresa u ONG <ArrowUpRight data-icon="inline-end" />
               </Button>
             </div>
             <div className="mt-10 flex items-center gap-2 text-sm text-slate-500">
@@ -86,6 +99,33 @@ export default function Page() {
         <div className="max-w-xl"><p className="text-sm font-bold uppercase tracking-[0.18em] text-[#1b9a72]">El problema</p><h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#123047] sm:text-5xl">Buscar una beca no debería ser otra carrera.</h2><p className="mt-5 text-lg leading-8 text-slate-600">Hoy, acceder a una oportunidad requiere tiempo, orden y mucha paciencia.</p></div>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {problems.map(({ icon: Icon, title, description }, index) => <article key={title} className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md"><div className={`mb-12 flex size-12 items-center justify-center rounded-2xl ${index === 1 ? 'bg-[#fff3d9] text-[#b97813]' : 'bg-[#e6f7ef] text-[#178060]'}`}><Icon className="size-5" aria-hidden="true" /></div><h3 className="text-xl font-semibold tracking-tight text-[#123047]">{title}</h3><p className="mt-3 leading-7 text-slate-600">{description}</p></article>)}
+        </div>
+      </section>
+
+      <section id="estudiantes" className="bg-[#f4fbf9] px-6 py-24 lg:px-8 lg:py-32">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-xl">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#1b9a72]">Cómo funciona</p>
+            <h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#123047] sm:text-5xl">Tu identidad te acompaña en cada postulación.</h2>
+          </div>
+          <div className="mt-14 grid gap-8 md:grid-cols-4 md:gap-4">
+            {steps.map(({ icon: Icon, title }, index) => (
+              <article key={title} className="relative flex gap-4 md:block md:pr-6">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#147d61] shadow-sm ring-1 ring-[#ccefe1]"><Icon className="size-5" aria-hidden="true" /></div>
+                <div className="md:mt-5"><p className="text-sm font-semibold text-[#1b9a72]">0{index + 1}</p><h3 className="mt-2 text-lg font-semibold leading-7 text-[#123047]">{title}</h3></div>
+                {index < steps.length - 1 && <div aria-hidden="true" className="absolute left-6 top-14 h-8 w-px bg-[#b9e6d5] md:left-auto md:right-0 md:top-6 md:h-px md:w-8" />}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="organizaciones" className="mx-auto max-w-6xl px-6 py-24 lg:px-8 lg:py-32">
+        <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
+          <div className="max-w-md"><p className="text-sm font-bold uppercase tracking-[0.18em] text-[#1b9a72]">Para empresas y ONGs</p><h2 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[#123047] sm:text-5xl">Invertí en oportunidades que dejan huella.</h2><p className="mt-5 text-lg leading-8 text-slate-600">Conectá tu apoyo con estudiantes y acompañá cada beca de forma clara.</p></div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {organizationBenefits.map(({ icon: Icon, title, description }) => <article key={title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"><div className="flex size-11 items-center justify-center rounded-2xl bg-[#e6f7ef] text-[#178060]"><Icon className="size-5" aria-hidden="true" /></div><h3 className="mt-8 text-lg font-semibold leading-7 text-[#123047]">{title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{description}</p></article>)}
+          </div>
         </div>
       </section>
 
