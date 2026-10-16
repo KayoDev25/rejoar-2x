@@ -48,7 +48,10 @@ export default function Page() {
             </span>
             <span className="text-lg font-bold tracking-[-0.04em] text-[#164e63]">REJOAR</span>
           </a>
-          <span className="hidden text-sm font-medium text-slate-500 sm:block">Becas que abren caminos</span>
+          <nav aria-label="Principal" className="flex items-center gap-5 text-sm font-medium">
+            <a href="/verificar" className="text-[#147d61] hover:text-[#0f604b]">Verificar credencial</a>
+            <span className="hidden text-slate-500 sm:block">Becas que abren caminos</span>
+          </nav>
         </header>
 
         <section id="inicio" className="mx-auto grid max-w-6xl items-center gap-14 px-6 pb-24 pt-12 lg:grid-cols-[1.1fr_.9fr] lg:px-8 lg:pb-36 lg:pt-20">
@@ -64,10 +67,10 @@ export default function Page() {
               Encontrá oportunidades, postulá sin repetir papeles y construí una identidad académica verificable. Todo en un solo lugar.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button render={<a href="#estudiantes" />} size="lg" className="h-12 rounded-full bg-[#164e63] px-6 text-base font-semibold text-white hover:bg-[#0f3d50]">
+              <Button render={<a href="/estudiante" />} size="lg" className="h-12 rounded-full bg-[#164e63] px-6 text-base font-semibold text-white hover:bg-[#0f3d50]">
                 Soy estudiante <ArrowUpRight data-icon="inline-end" />
               </Button>
-              <Button render={<a href="#organizaciones" />} size="lg" variant="outline" className="h-12 rounded-full border-[#9bd8c1] bg-white/70 px-6 text-base font-semibold text-[#147d61] hover:bg-[#eaf8f2]">
+              <Button render={<a href="/empresa" />} size="lg" variant="outline" className="h-12 rounded-full border-[#9bd8c1] bg-white/70 px-6 text-base font-semibold text-[#147d61] hover:bg-[#eaf8f2]">
                 Soy empresa u ONG <ArrowUpRight data-icon="inline-end" />
               </Button>
             </div>
